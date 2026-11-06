@@ -91,3 +91,8 @@ test('shows one compatibility notice if a discovered Bases controller cannot ref
   const f=fixture();f.controller.queue={};await f.plugin.onload();f.plugin.formula.apply(new f.FileValue(f.file),null);await delay();
   assert.equal(f.notices.length,1);f.setContent('## About\nChanged');f.app.vault.emit('modify',f.file);await delay();assert.equal(f.notices.length,1);f.plugin.unload();
 });
+
+test('deletion cancels an already scheduled refresh so no deleted file is requeued', async () => {
+  const f=fixture();await f.plugin.onload();f.plugin.scheduleRefresh(f.file);
+  f.app.vault.emit('delete',f.file);await delay();assert.deepEqual(f.changed,[]);f.plugin.unload();
+});

@@ -19,6 +19,8 @@ Inspection of the installed application's native table code showed a common row 
 
 The probe establishes feasibility. It does **not** establish that the complete plugin has passed live acceptance, mobile compatibility, or large-vault performance tests. Those remain pre-release checks.
 
+The reproducible probe is in [scripts/probe-obsidian.js](../scripts/probe-obsidian.js). With an existing Base open and the Obsidian CLI enabled, evaluate its contents using `obsidian eval code=...`. It is an Obsidian-console script, not a Node.js script. It creates and removes a temporary formula and an offscreen table; it does not deploy either plugin.
+
 ## Undocumented integration
 
 All private Bases access is isolated in `src/compat.mjs`:

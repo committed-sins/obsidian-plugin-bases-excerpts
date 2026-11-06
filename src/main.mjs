@@ -25,8 +25,12 @@ export default class BasesExcerpts extends Plugin {
       for (const heading of headings) void this.cache.load(file, heading).catch(error => console.error('Bases Excerpts: refresh failed', error));
     };
     this.registerEvent(this.app.vault.on('modify', changed));
-    this.registerEvent(this.app.vault.on('delete', file => this.cache.invalidate(file.path)));
-    this.registerEvent(this.app.vault.on('rename', (file, oldPath) => { this.cache.invalidate(oldPath); changed(file); }));
+    this.registerEvent(this.app.vault.on('delete', file => {
+      this.cache.invalidate(file.path); this.pendingRefresh.delete(file.path);
+    }));
+    this.registerEvent(this.app.vault.on('rename', (file, oldPath) => {
+      this.cache.invalidate(oldPath); this.pendingRefresh.delete(oldPath); changed(file);
+    }));
     registerExcerptFormula(this, (file, heading) => {
       if (!(file instanceof TFile) || file.extension !== 'md') return new ExcerptValue('', file?.path ?? '');
       const target = typeof heading === 'string' ? heading : this.heading;
@@ -48,6 +52,7 @@ export default class BasesExcerpts extends Plugin {
       this.refreshTimer = null;
       const files = [...this.pendingRefresh.values()]; this.pendingRefresh.clear();
       for (const pending of files) {
+        if (this.app.vault.getFileByPath(pending.path) !== pending) continue;
         if (!refreshFileInBases(this.app, pending) && !this.warned) {
           this.warned = true;
           new Notice('Bases Excerpts: this Obsidian version does not support automatic formula refresh. Reopen the Base and check for a plugin update.');
@@ -58,9 +63,10 @@ export default class BasesExcerpts extends Plugin {
   async setHeading(heading) {
     this.heading = heading.trim() || '## About';
     await this.saveData({ heading: this.heading });
-    for (const file of this.app.vault.getMarkdownFiles()) {
-      this.cache.invalidate(file.path);
-      this.scheduleRefresh(file);
+    for (const path of [...this.cache.entries.keys()]) {
+      this.cache.invalidate(path);
+      const file = this.app.vault.getFileByPath(path);
+      if (file) this.scheduleRefresh(file);
     }
   }
 }
