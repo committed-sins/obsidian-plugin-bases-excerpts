@@ -38,10 +38,10 @@ function fixture() {
   };
   class Plugin extends Component {
     constructor(){super();this.app=app;}
-    async loadData(){return null;}async saveData(data){this.saved=data;}
+    async loadData(){throw Error("No settings may be loaded");}async saveData(){throw Error("No settings may be saved");}
     registerGlobalFunc(fn){this.formula=fn;this.register(()=>this.formula=null);}
     registerBasesView(){throw Error('Excerpts must not register its own view');}
-    addSettingTab(){}
+    addSettingTab(){throw Error("No settings page may be registered");}
   }
   const obsidian={Plugin,Component,TFile,StringValue,FileValue,QueryController,Notice:class{constructor(text){notices.push(text);}},PluginSettingTab:class{},Setting:class{},Keymap:{isModEvent:e=>e.button===1||e.ctrlKey},MarkdownRenderer:{async render(_app,text,el,sourcePath,owner){rendered.push({text,sourcePath,owner});el.createEl('a',{cls:'internal-link',text:'Other',attr:{'data-href':'./Other.md',href:'./Other.md'}});}}};
   const module={exports:{}};
@@ -54,27 +54,30 @@ const delay=()=>new Promise(resolve=>setTimeout(resolve,70));
 test('async completion requeues an initially empty formula, including excluded rows', async () => {
   const f=fixture();await f.plugin.onload();
   const source=new f.FileValue(f.file);
-  const first=f.plugin.formula.applyWithContext({},source,null);
+  const first=f.plugin.formula.applyWithContext({},source,new StringValue("## About"));
   assert.equal(first.toString(),'');assert.equal(f.plugin.formula.ctx,null);
   await delay();assert.deepEqual(f.changed,['notes/Source.md']);
-  assert.equal(f.plugin.formula.apply(source,null).toString(),'**First** ![[Media]]');
+  assert.equal(f.plugin.formula.apply(source,new StringValue("## About")).toString(),'**First** ![[Media]]');
   f.setContent('## About\nChanged');f.app.vault.emit('modify',f.file);await delay();
-  assert.equal(f.plugin.formula.apply(source,null).toString(),'Changed');assert.equal(f.changed.length,2);
+  assert.equal(f.plugin.formula.apply(source,new StringValue("## About")).toString(),'Changed');assert.equal(f.changed.length,2);
   f.plugin.unload();assert.equal(f.plugin.formula,null);
 });
-test('heading settings invalidate dependent formulas and missing source yields empty', async () => {
-  const f=fixture();await f.plugin.onload();
-  assert.equal(f.plugin.formula.apply(null,null).toString(),'');
+test('headings are required and configured only in formulas with independent caches', async () => {
+  const f=fixture();await f.plugin.onload();const source=new f.FileValue(f.file);
+  for(const heading of [undefined,null,new StringValue(''),new StringValue('   '),new StringValue('##'),new StringValue('About\nOther')]) assert.throws(()=>f.plugin.formula.apply(source,heading),/requires a nonempty heading/);
+  assert.equal(f.plugin.formula.params[1].optional,false);
   f.setContent('## About\nFirst\n## Other\nSecond');
-  await f.plugin.setHeading('## Other');
-  const source=new f.FileValue(f.file);f.plugin.formula.apply(source,null);await delay();
-  assert.equal(f.plugin.formula.apply(source,null).toString(),'Second');
-  assert.equal(f.plugin.saved.heading,'## Other');f.plugin.unload();
+  for(const heading of ['## About','## Other'])f.plugin.formula.apply(source,new StringValue(heading));
+  await delay();
+  assert.equal(f.plugin.formula.apply(source,new StringValue('## About')).toString(),'First');
+  assert.equal(f.plugin.formula.apply(source,new StringValue('## Other')).toString(),'Second');
+  assert.equal(f.plugin.cache.entries.get(f.file.path).size,2);f.plugin.unload();
 });
+
 test('formula render hook works without a custom view and keeps source-relative links', async () => {
   const f=fixture();await f.plugin.onload();const source=new f.FileValue(f.file);
-  f.plugin.formula.apply(source,null);await delay();
-  const value=f.plugin.formula.apply(source,null);
+  f.plugin.formula.apply(source,new StringValue("## About"));await delay();
+  const value=f.plugin.formula.apply(source,new StringValue("## About"));
   const cell=f.document.getElementById('view');
   value.renderTo(cell,{});
   assert.equal(f.rendered.length,1);assert.equal(f.rendered[0].sourcePath,'notes/Source.md');
@@ -86,7 +89,7 @@ test('formula render hook works without a custom view and keeps source-relative 
   assert.equal(f.plugin.renderer.records.size,0);
 });
 test('shows one compatibility notice if a discovered Bases controller cannot refresh', async () => {
-  const f=fixture();f.controller.queue={};await f.plugin.onload();f.plugin.formula.apply(new f.FileValue(f.file),null);await delay();
+  const f=fixture();f.controller.queue={};await f.plugin.onload();f.plugin.formula.apply(new f.FileValue(f.file),new StringValue("## About"));await delay();
   assert.equal(f.notices.length,1);f.setContent('## About\nChanged');f.app.vault.emit('modify',f.file);await delay();assert.equal(f.notices.length,1);f.plugin.unload();
 });
 
@@ -97,7 +100,7 @@ test('deletion cancels an already scheduled refresh so no deleted file is requeu
 
 test('recycled and detached cells release Markdown children and link listeners', async () => {
   const f=fixture();await f.plugin.onload();const source=new f.FileValue(f.file);
-  f.plugin.formula.apply(source,null);await delay();const value=f.plugin.formula.apply(source,null);
+  f.plugin.formula.apply(source,new StringValue("## About"));await delay();const value=f.plugin.formula.apply(source,new StringValue("## About"));
   const cell=f.document.getElementById('view');value.renderTo(cell,{});
   const oldLink=cell.querySelector('a');cell.empty();await delay();
   assert.equal(f.plugin.renderer.records.size,0);assert.equal(f.plugin._children.length,0);
@@ -109,8 +112,8 @@ test('recycled and detached cells release Markdown children and link listeners',
 
 test('middle clicks and hover previews retain the source note context', async () => {
   const f=fixture();const hover=[];f.app.workspace.trigger=(...args)=>hover.push(args);await f.plugin.onload();
-  const source=new f.FileValue(f.file);f.plugin.formula.apply(source,null);await delay();
-  const value=f.plugin.formula.apply(source,null);const cell=f.document.getElementById('view');const context={};value.renderTo(cell,context);
+  const source=new f.FileValue(f.file);f.plugin.formula.apply(source,new StringValue("## About"));await delay();
+  const value=f.plugin.formula.apply(source,new StringValue("## About"));const cell=f.document.getElementById('view');const context={};value.renderTo(cell,context);
   const link=cell.querySelector('a');const click=new f.window.Event('auxclick',{bubbles:true,cancelable:true});click.button=1;link.dispatchEvent(click);
   assert.deepEqual(f.opened,[['./Other.md','notes/Source.md',true]]);
   link.dispatchEvent(new f.window.Event('mouseover',{bubbles:true}));assert.equal(hover[0][1].sourcePath,'notes/Source.md');assert.equal(hover[0][1].hoverParent,context);
@@ -118,14 +121,14 @@ test('middle clicks and hover previews retain the source note context', async ()
 });
 
 test('equal text from different source notes requires rerendering links', async () => {
-  const f=fixture();await f.plugin.onload();const source=new f.FileValue(f.file);f.plugin.formula.apply(source,null);await delay();
-  const first=f.plugin.formula.apply(source,null);const other=new first.constructor(first.data,'different/Source.md',f.plugin.renderer);
-  assert.equal(first.equals(other),false);assert.equal(first.equals(f.plugin.formula.apply(source,null)),true);f.plugin.unload();
+  const f=fixture();await f.plugin.onload();const source=new f.FileValue(f.file);f.plugin.formula.apply(source,new StringValue("## About"));await delay();
+  const first=f.plugin.formula.apply(source,new StringValue("## About"));const other=new first.constructor(first.data,'different/Source.md',f.plugin.renderer);
+  assert.equal(first.equals(other),false);assert.equal(first.equals(f.plugin.formula.apply(source,new StringValue("## About"))),true);f.plugin.unload();
 });
 
 test('closing a document releases its renderers and observers', async () => {
-  const f=fixture();await f.plugin.onload();const source=new f.FileValue(f.file);f.plugin.formula.apply(source,null);await delay();
-  f.plugin.formula.apply(source,null).renderTo(f.document.getElementById('view'),{});
+  const f=fixture();await f.plugin.onload();const source=new f.FileValue(f.file);f.plugin.formula.apply(source,new StringValue("## About"));await delay();
+  f.plugin.formula.apply(source,new StringValue("## About")).renderTo(f.document.getElementById('view'),{});
   f.app.workspace.emit('window-close',{}, {document:f.document});
   assert.equal(f.plugin.renderer.documents.size,0);assert.equal(f.plugin.renderer.records.size,0);assert.equal(f.plugin._children.length,0);f.plugin.unload();
 });

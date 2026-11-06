@@ -2,7 +2,11 @@
 
 Use the first nonempty content line beneath a chosen Markdown heading as a Bases formula value. Its Markdown and source-relative links render directly in the native Bases table, without requiring a custom view or another plugin.
 
-**Development preview — not yet released or listed in Community plugins.** Requires Obsidian 1.15.0 or newer and the Bases core plugin. Plugin ID: `bases-excerpts`. MIT licensed. No CodeScript Toolkit or other community plugin is required.
+**Initial release — not yet listed in Community plugins.** Requires Obsidian 1.15.0 or newer and the Bases core plugin. Plugin ID: `bases-excerpts`. MIT licensed. No CodeScript Toolkit or other community plugin is required.
+
+## Installation
+
+Until directory review is complete, download `main.js`, `manifest.json`, and `styles.css` from the [latest GitHub release](https://github.com/stallinger-dev/obsidian-bases-excerpts/releases/latest). Put the three files in `<vault>/.obsidian/plugins/bases-excerpts/`, restart Obsidian, and enable **Bases Excerpts** under Community plugins. No settings are needed; each formula specifies its heading.
 
 ## Usage
 
@@ -42,7 +46,7 @@ The native table retains its fixed row-height settings and can clip long excerpt
 
 The former unreleased `bases-excerpts-table` preview view has been removed. Use `type: table` for native rendering, or `type: bases-formats-table` with Bases Formats for automatic row heights. No Base files are changed automatically.
 
-`basesExcerpt(file)` uses the plugin's default heading, initially `## About`. Change it in plugin settings and press **Save heading**. Each formula can override it. `## About` matches that exact ATX heading level and title; `About` matches that title at any ATX level. Matching is case-sensitive. Setext headings are not supported in this first version.
+The heading is a required argument: `basesExcerpt(file, "## About")`. There is no settings page or stored default. Missing, blank, multiline, or marker-only headings produce a formula error. `## About` matches that exact ATX heading level and title; `About` matches that title at any ATX level. Matching is case-sensitive. Setext headings are not supported in this first version.
 
 ## Extraction and rendering
 
@@ -57,6 +61,12 @@ The former unreleased `bases-excerpts-table` preview view has been removed. Use 
 Only requested file/heading pairs are cached in memory. The first lookup starts an asynchronous vault read and briefly returns `""`; once the read completes, the file is requeued in active Bases queries. This also updates filters that initially excluded the empty value, and sorting. Identical concurrent requests share one read. Reads that finish after invalidation, deletion, rename, or unload cannot restore stale content.
 
 File modification invalidates its cached headings and reloads those already requested. Renames and deletions invalidate old paths. The cache is never written into notes or synchronized plugin data. Obsidian still reads the source file as a whole; the plugin's extraction parser stops at the first result.
+
+## Privacy and compatibility
+
+The plugin reads Markdown notes inside the current vault and caches requested excerpts in memory. It does not modify notes, use telemetry, require an account, read files outside the vault, or make network requests. Clicking external links follows Obsidian's normal link behavior. The developer-only deployment script writes release files into the vault explicitly selected by the developer.
+
+Formula registration and asynchronous query refresh currently rely on undocumented Bases APIs, isolated in `src/compat.mjs`. These were tested on desktop Obsidian 1.15.0. Mobile compatibility has not been tested; no Node.js or Electron APIs are bundled in the plugin runtime.
 
 ## Development and local deployment
 
@@ -76,7 +86,7 @@ npm run deploy
 
 Optionally set `OBSIDIAN_CONFIG_DIR` to a relative config folder (default `.obsidian`). The config folder must already exist. Deployment rebuilds and tests, copies only `main.js`, `manifest.json`, and `styles.css` into `<config>/plugins/bases-excerpts/`, and preserves `data.json`. Enable/reload the plugin manually. It does not change existing plugins or Base files.
 
-**No deployment has been performed during repository setup.** Announce the first deployment before running it. The old formatter remains installed until its separate migration.
+The initial desktop deployment was tested in a local vault on Obsidian 1.15.0. The old formatter remains installed until its separate migration.
 
 ## Technical probe and release checks
 
