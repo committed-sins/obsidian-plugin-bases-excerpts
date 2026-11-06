@@ -1,6 +1,6 @@
 # Bases Excerpts
 
-Use the first nonempty content line beneath a chosen Markdown heading as a Bases formula value. Render its Markdown, source-relative links, and wrapped text in an **Excerpts table** view whose rows grow with their content.
+Use the first nonempty content line beneath a chosen Markdown heading as a Bases formula value. Its Markdown and source-relative links render directly in the native Bases table, without requiring a custom view or another plugin.
 
 **Development preview — not yet released or listed in Community plugins.** Requires Obsidian 1.15.0 or newer and the Bases core plugin. Plugin ID: `bases-excerpts`. MIT licensed. No CodeScript Toolkit or other community plugin is required.
 
@@ -24,20 +24,23 @@ properties:
   formula.about:
     displayName: About
 views:
-  - type: bases-excerpts-table
+  - type: table
     name: Excerpts
     order:
       - file.name
       - formula.about
-    columnWidth: 280
     sort:
       - property: formula.about
         direction: ASC
 ```
 
-Select **Excerpts table** in the Bases view selector. Configure visible columns, filters, sorting, grouping, and limits using Bases. The view is a read-only table. It uses a normal HTML table and renders all returned rows; for very large results, set a Bases limit. Column width is adjustable in view settings (100–800 px, default 280); text wraps and rows automatically grow or shrink. Other Bases views remain available.
+Use the native **Table** view and configure visible columns, filters, sorting, grouping, and limits using Bases. Excerpt cells display Markdown with clickable links; other note properties retain their normal editing behavior. Formula cells themselves remain calculated values.
 
-For example, a Bases filter can use `formula.about.contains("introduction")` or `basesExcerpt(file, "## About") != ""`. The formula returns a string containing the original Markdown line, so string functions, filters, and sorting work on that Markdown text. The value remains a string even when its cell displays rich Markdown. In the native fixed-height table, it is displayed as ordinary Markdown source text; automatic row height and rich Markdown are provided by **Excerpts table**.
+For example, a Bases filter can use `formula.about.contains("introduction")` or `basesExcerpt(file, "## About") != ""`. The formula returns a string containing the original Markdown line, so string functions, filters, and sorting work on that Markdown text. Its rendering hook changes only the display. String transformations that produce a new ordinary string do not retain the excerpt-specific renderer.
+
+The native table retains its fixed row-height settings and can clip long excerpts. For full wrapping and automatically growing rows, optionally enable [Bases Formats](https://github.com/stallinger-dev/obsidian-bases-formats) and select its **Flexible table** view (`type: bases-formats-table`). That general-purpose view is read-only, with clickable links, and works independently of Excerpts. Excerpts does not register a table view.
+
+The former unreleased `bases-excerpts-table` preview view has been removed. Use `type: table` for native rendering, or `type: bases-formats-table` with Bases Formats for automatic row heights. No Base files are changed automatically.
 
 `basesExcerpt(file)` uses the plugin's default heading, initially `## About`. Change it in plugin settings and press **Save heading**. Each formula can override it. `## About` matches that exact ATX heading level and title; `About` matches that title at any ATX level. Matching is case-sensitive. Setext headings are not supported in this first version.
 
@@ -46,7 +49,7 @@ For example, a Bases filter can use `formula.about.contains("introduction")` or 
 - Blank lines after the heading are skipped. The first nonempty physical content line is returned, then parsing stops. Following body lines are never parsed for extraction.
 - A missing heading, an empty section, or an immediately following heading produces `""`. With repeated headings, the first matching section wins.
 - YAML frontmatter, fenced code blocks, and standalone comments before the selected heading cannot introduce a false heading. Multiline Markdown constructs are limited to the selected physical line.
-- Formatting uses Obsidian's Markdown renderer with the source note's path. Internal links open relative to the source note, including modifier/middle clicks and hover previews. External links remain links.
+- Formatting uses Obsidian's Markdown renderer and the formula value's public `renderTo` hook with the source note's path. Internal links open relative to the source note, including modifier/middle clicks and hover previews. External links remain links. Markdown components and listeners are released when cells are reused, detached, or closed, and when the plugin unloads.
 - Wiki embeds and Markdown images are converted to ordinary links for display. Raw media HTML is displayed literally. Embedded notes, images, audio, and other media are not expanded. Code remains literal. The formula keeps the original line, including embed syntax.
 
 ## Cache and updates
@@ -77,7 +80,7 @@ Optionally set `OBSIDIAN_CONFIG_DIR` to a relative config folder (default `.obsi
 
 ## Technical probe and release checks
 
-See [the technical probe and compatibility boundaries](docs/technical-probe.md). Formula registration and formula-cache refresh use small, guarded, undocumented Obsidian interfaces. The custom view itself uses the public Bases API. A future Obsidian update may require a compatibility change. Mobile support is intended but unverified.
+See [the technical probe and compatibility boundaries](docs/technical-probe.md). Formula registration and formula-cache refresh use small, guarded, undocumented Obsidian interfaces. Markdown rendering uses the public value-rendering API. A future Obsidian update may require a compatibility change. Mobile support is intended but unverified.
 
 Before release, test in a disposable vault: create/modify/delete/rename a source note; a filter excluding empty excerpts; sorting after edits; changing headings; relative links and hover previews from a different folder; wiki and media embeds; grouped Bases; long Markdown at different widths; a second window; reload/unload; and mobile. Verify the note files remain unchanged.
 

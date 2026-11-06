@@ -15,7 +15,11 @@ Observed results:
 | Same content at 90 px width | 656 px |
 | Temporary test DOM removed | Confirmed |
 
-Inspection of the installed application's native table code showed a common row height calculated as the base row height times the selected height multiplier. Merely changing cell CSS would not update its virtualized row positions. The approved implementation therefore provides the separate **Excerpts table** Bases view with natural table layout.
+Inspection of the installed application's native table code showed a common row height calculated as the base row height times the selected height multiplier. Merely changing cell CSS would not update its virtualized row positions. The optional **Flexible table** view with natural table layout now belongs to the independent **Bases Formats** plugin (`bases-formats-table`). The earlier unreleased Excerpts table was moved there before any deployment.
+
+The native table was also inspected: its formula renderer calls the result value's public `renderTo(element, context)` hook. Excerpts now implements this hook to render Markdown and source-relative links directly in the native table, preserving its fixed heights and normal editing of other properties. The value remains a string for filters and sorting. The general Formats view delegates to the same hook without any Excerpts-specific code or dependency.
+
+Automated regression tests cover standalone rendering, links, cell recycling, detached cells, closed documents, and plugin unload. Acceptance in a live vault is still pending; no deployment has occurred.
 
 The probe establishes feasibility. It does **not** establish that the complete plugin has passed live acceptance, mobile compatibility, or large-vault performance tests. Those remain pre-release checks.
 

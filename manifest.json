@@ -3,7 +3,7 @@
   "name": "Bases Excerpts",
   "version": "0.1.0",
   "minAppVersion": "1.15.0",
-  "description": "Use heading excerpts as Bases formula values and render Markdown in a table with wrapping, automatically sized rows.",
+  "description": "Use heading excerpts as Bases string formula values with rendered Markdown and source-relative links in native and compatible custom views.",
   "author": "Michael J. Stallinger",
   "authorUrl": "https://stallinger.dev",
   "isDesktopOnly": false

@@ -1,20 +1,19 @@
-import { Notice, Plugin, PluginSettingTab, Setting, StringValue, TFile } from 'obsidian';
+import { Notice, Plugin, PluginSettingTab, Setting, TFile } from 'obsidian';
 import { ExcerptCache } from './cache.mjs';
 import { refreshFileInBases, registerExcerptFormula } from './compat.mjs';
-import { ExcerptsTable } from './view.mjs';
-
-class ExcerptValue extends StringValue {
-  constructor(text, sourcePath) { super(text); this.sourcePath = sourcePath; }
-}
+import { ExcerptRenderer, ExcerptValue } from './render.mjs';
 
 export default class BasesExcerpts extends Plugin {
   async onload() {
     const saved = await this.loadData();
     this.heading = typeof saved?.heading === 'string' && saved.heading.trim() ? saved.heading.trim() : '## About';
     this.active = true; this.pendingRefresh = new Map(); this.refreshTimer = null; this.warned = false;
+    this.renderer = new ExcerptRenderer(this);
+    this.registerEvent(this.app.workspace.on('window-close', (_workspaceWindow, win) => this.renderer.releaseDocument(win.document)));
     this.cache = new ExcerptCache(file => this.app.vault.cachedRead(file), file => this.scheduleRefresh(file), error => console.error('Bases Excerpts: read failed', error));
     this.register(() => {
       this.active = false; this.cache.dispose();
+      this.renderer.dispose();
       if (this.refreshTimer !== null) window.clearTimeout(this.refreshTimer);
       this.pendingRefresh.clear();
     });
@@ -32,16 +31,10 @@ export default class BasesExcerpts extends Plugin {
       this.cache.invalidate(oldPath); this.pendingRefresh.delete(oldPath); changed(file);
     }));
     registerExcerptFormula(this, (file, heading) => {
-      if (!(file instanceof TFile) || file.extension !== 'md') return new ExcerptValue('', file?.path ?? '');
+      if (!(file instanceof TFile) || file.extension !== 'md') return new ExcerptValue('', file?.path ?? '', this.renderer);
       const target = typeof heading === 'string' ? heading : this.heading;
-      return new ExcerptValue(this.cache.get(file, target), file.path);
+      return new ExcerptValue(this.cache.get(file, target), file.path, this.renderer);
     });
-    const registered = this.registerBasesView('bases-excerpts-table', {
-      name: 'Excerpts table', icon: 'text-select',
-      factory: (controller, el) => new ExcerptsTable(controller, el, value => value instanceof ExcerptValue),
-      options: () => [{ type: 'slider', key: 'columnWidth', displayName: 'Column width', default: 280, min: 100, max: 800, step: 20 }],
-    });
-    if (!registered) new Notice('Bases Excerpts: enable the Bases core plugin, then reload Bases Excerpts.');
     this.addSettingTab(new ExcerptsSettings(this.app, this));
   }
   scheduleRefresh(file) {
