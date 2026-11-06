@@ -1,7 +1,7 @@
 {
   "id": "bases-excerpts",
   "name": "Bases Excerpts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "minAppVersion": "1.15.0",
   "description": "Use heading excerpts as Bases string formula values with rendered Markdown and source-relative links in native and compatible custom views.",
   "author": "Committed Sins",

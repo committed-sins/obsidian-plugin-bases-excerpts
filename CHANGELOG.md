@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 — 2026-11-06
+
+- Publish under Committed Sins, with Michael J. Stallinger credited as author.
+- Update repository and installation links to the committed-sins GitHub organization.
+- No runtime behavior changes.
+
 ## 0.1.0 — 2026-11-06
 
 - Use `bases-excerpts` as the internal plugin ID and installation directory, distinct from the repository name `obsidian-bases-excerpts`; validate the official ID naming rules during builds.

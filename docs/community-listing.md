@@ -26,4 +26,4 @@ The public listing excerpt is supplied by the repository README. No separate web
 
 Official instructions: https://docs.obsidian.md/plugins/releasing/submit-plugin and https://docs.obsidian.md/community-directory/set-up-and-claim.
 
-Before submission: the signed `0.1.0` release must be published with `main.js`, `manifest.json`, and `styles.css`. The repository is public. Undocumented Bases APIs and untested mobile compatibility are disclosed in the README.
+Before submission: the signed `0.1.1` release must be published with `main.js`, `manifest.json`, and `styles.css`. The repository is public. Undocumented Bases APIs and untested mobile compatibility are disclosed in the README.
