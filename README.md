@@ -1,12 +1,16 @@
 # Bases Excerpts
 
+**By:** Committed Sins
+
+**Author:** Michael J. Stallinger
+
 Use the first nonempty content line beneath a chosen Markdown heading as a Bases formula value. Its Markdown and source-relative links render directly in the native Bases table, without requiring a custom view or another plugin.
 
 **Initial release — not yet listed in Community plugins.** Requires Obsidian 1.15.0 or newer and the Bases core plugin. Plugin ID: `bases-excerpts`. MIT licensed. No CodeScript Toolkit or other community plugin is required.
 
 ## Installation
 
-Until directory review is complete, download `main.js`, `manifest.json`, and `styles.css` from the [latest GitHub release](https://github.com/stallinger-dev/obsidian-bases-excerpts/releases/latest). Put the three files in `<vault>/.obsidian/plugins/bases-excerpts/`, restart Obsidian, and enable **Bases Excerpts** under Community plugins. No settings are needed; each formula specifies its heading.
+Until directory review is complete, download `main.js`, `manifest.json`, and `styles.css` from the [latest GitHub release](https://github.com/committed-sins/obsidian-bases-excerpts/releases/latest). Put the three files in `<vault>/.obsidian/plugins/bases-excerpts/`, restart Obsidian, and enable **Bases Excerpts** under Community plugins. No settings are needed; each formula specifies its heading.
 
 ## Usage
 
@@ -42,7 +46,7 @@ Use the native **Table** view and configure visible columns, filters, sorting, g
 
 For example, a Bases filter can use `formula.about.contains("introduction")` or `basesExcerpt(file, "## About") != ""`. The formula returns a string containing the original Markdown line, so string functions, filters, and sorting work on that Markdown text. Its rendering hook changes only the display. String transformations that produce a new ordinary string do not retain the excerpt-specific renderer.
 
-The native table retains its fixed row-height settings and can clip long excerpts. For full wrapping and automatically growing rows, optionally enable [Bases Formats](https://github.com/stallinger-dev/obsidian-bases-formats) and select its **Flexible table** view (`type: bases-formats-table`). That general-purpose view is read-only, with clickable links, and works independently of Excerpts. Excerpts does not register a table view.
+The native table retains its fixed row-height settings and can clip long excerpts. For full wrapping and automatically growing rows, optionally enable [Bases Formats](https://github.com/committed-sins/obsidian-bases-formats) and select its **Flexible table** view (`type: bases-formats-table`). That general-purpose view is read-only, with clickable links, and works independently of Excerpts. Excerpts does not register a table view.
 
 The former unreleased `bases-excerpts-table` preview view has been removed. Use `type: table` for native rendering, or `type: bases-formats-table` with Bases Formats for automatic row heights. No Base files are changed automatically.
 

@@ -7,7 +7,7 @@
   "author": "Michael J. Stallinger",
   "repository": {
     "type": "git",
-    "url": "https://github.com/stallinger-dev/obsidian-bases-excerpts.git"
+    "url": "https://github.com/committed-sins/obsidian-bases-excerpts.git"
   },
   "engines": {
     "node": ">=22"

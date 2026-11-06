@@ -1,10 +1,14 @@
 # Community listing submission
 
-Repository: https://github.com/stallinger-dev/obsidian-bases-excerpts
+Repository: https://github.com/committed-sins/obsidian-bases-excerpts
 
 Plugin ID: `bases-excerpts`
 
 Name: **Bases Excerpts**
+
+Publisher: **Committed Sins**
+
+Author: **Michael J. Stallinger**
 
 Suggested listing description:
 
@@ -15,7 +19,7 @@ The public listing excerpt is supplied by the repository README. No separate web
 ## Submission steps
 
 1. Sign in at https://community.obsidian.md using your Obsidian account.
-2. Connect your GitHub account so ownership of the public repository can be verified. If needed, set up the stallinger-dev organization in the directory.
+2. Connect your GitHub account so ownership of the public repository can be verified. Use the existing `committed-sins` organization in the Obsidian community directory. Its sole administrator is `mjstallinger`.
 3. Under Plugins, choose New plugin, enter the repository URL above, and select the desired personal or organization owner.
 4. Review the developer policies and personally confirm the ongoing support commitment before submitting.
 5. Address automated review feedback. The plugin becomes installable through Obsidian only after review errors are resolved.
