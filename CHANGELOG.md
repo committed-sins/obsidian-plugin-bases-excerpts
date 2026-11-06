@@ -2,6 +2,8 @@
 
 ## 0.1.0 — Unreleased
 
+- Use `obsidian-bases-excerpts` as the internal plugin ID and installation directory.
+
 - Render Markdown and source-relative links through the formula value in the native table and compatible custom views.
 - Move the optional table view to Bases Formats; Excerpts no longer owns a view or requires another community plugin.
 

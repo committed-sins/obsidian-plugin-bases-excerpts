@@ -2,7 +2,7 @@
 
 Use the first nonempty content line beneath a chosen Markdown heading as a Bases formula value. Its Markdown and source-relative links render directly in the native Bases table, without requiring a custom view or another plugin.
 
-**Development preview — not yet released or listed in Community plugins.** Requires Obsidian 1.15.0 or newer and the Bases core plugin. Plugin ID: `bases-excerpts`. MIT licensed. No CodeScript Toolkit or other community plugin is required.
+**Development preview — not yet released or listed in Community plugins.** Requires Obsidian 1.15.0 or newer and the Bases core plugin. Plugin ID: `obsidian-bases-excerpts`. MIT licensed. No CodeScript Toolkit or other community plugin is required.
 
 ## Usage
 
@@ -74,7 +74,7 @@ $env:OBSIDIAN_VAULT = 'C:\path\to\test-vault'
 npm run deploy
 ```
 
-Optionally set `OBSIDIAN_CONFIG_DIR` to a relative config folder (default `.obsidian`). The config folder must already exist. Deployment rebuilds and tests, copies only `main.js`, `manifest.json`, and `styles.css` into `<config>/plugins/bases-excerpts/`, and preserves `data.json`. Enable/reload the plugin manually. It does not change existing plugins or Base files.
+Optionally set `OBSIDIAN_CONFIG_DIR` to a relative config folder (default `.obsidian`). The config folder must already exist. Deployment rebuilds and tests, copies only `main.js`, `manifest.json`, and `styles.css` into `<config>/plugins/obsidian-bases-excerpts/`, and preserves `data.json`. Enable/reload the plugin manually. It does not change existing plugins or Base files.
 
 **No deployment has been performed during repository setup.** Announce the first deployment before running it. The old formatter remains installed until its separate migration.
 

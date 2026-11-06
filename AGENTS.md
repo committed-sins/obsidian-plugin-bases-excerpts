@@ -2,6 +2,7 @@
 
 - Build and test with `npm ci` and `npm run check`.
 - Keep vault targets in environment variables, outside versioned configuration.
+- The internal plugin ID and installation directory are `obsidian-bases-excerpts`; the display name is Bases Excerpts.
 - Announce the first local deployment before executing it. Repository setup has not deployed this plugin.
 - Keep extraction, caching, and the formula value's Markdown renderer here. The optional Flexible table view belongs to Bases Formats; neither plugin may depend on the other. Keep private Bases APIs isolated in `src/compat.mjs`.
 - Preserve the old `bases-amount-formatter` plugin until the user approves its separate cutover. Never reuse its ID.

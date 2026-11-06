@@ -52,7 +52,7 @@ export class ExcerptRenderer {
     owner.registerDomEvent(content, 'mouseover', event => {
       const link = event.target.closest?.('a.internal-link');
       if (link) this.app.workspace.trigger('hover-link', {
-        event, source: 'bases-excerpts', hoverParent: context, targetEl: link,
+        event, source: 'obsidian-bases-excerpts', hoverParent: context, targetEl: link,
         linktext: link.dataset.href ?? link.getAttribute('href'), sourcePath: value.sourcePath,
       });
     });
