@@ -1,0 +1,25 @@
+.bases-excerpts-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  max-width: none;
+  color: var(--text-normal);
+}
+.bases-excerpts-table th,
+.bases-excerpts-table td {
+  box-sizing: border-box;
+  border: 1px solid var(--background-modifier-border);
+  padding: 8px 12px;
+  vertical-align: top;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  height: auto;
+}
+.bases-excerpts-table thead th {
+  background: var(--background-secondary);
+  text-align: start;
+}
+.bases-excerpts-table .bases-excerpts-group th { text-align: start; }
+.bases-excerpts-table .bases-excerpts-markdown > div > :first-child { margin-block-start: 0; }
+.bases-excerpts-table .bases-excerpts-markdown > div > :last-child { margin-block-end: 0; }
+.bases-excerpts-table .bases-excerpts-markdown pre { white-space: pre-wrap; }
+.bases-excerpts-table .bases-excerpts-markdown code { white-space: break-spaces; }

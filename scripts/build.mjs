@@ -1,0 +1,10 @@
+import { build } from 'esbuild';
+import { copyFile, mkdir, readFile } from 'node:fs/promises';
+await mkdir('dist', { recursive: true });
+await build({ entryPoints: ['src/main.mjs'], outfile: 'dist/main.js', bundle: true, external: ['obsidian'], platform: 'browser', format: 'cjs', target: 'es2022', sourcemap: false, banner: { js: '/* Built from source. See the repository for the MIT license. */' } });
+const manifest = JSON.parse(await readFile('manifest.json', 'utf8'));
+const pkg = JSON.parse(await readFile('package.json', 'utf8'));
+const versions = JSON.parse(await readFile('versions.json', 'utf8'));
+if (pkg.version !== manifest.version || versions[manifest.version] !== manifest.minAppVersion) throw Error('Version metadata is inconsistent.');
+for (const file of ['manifest.json', 'styles.css']) await copyFile(file, 'dist/' + file);
+console.log('Built ' + manifest.id + ' ' + manifest.version + ' in dist/');

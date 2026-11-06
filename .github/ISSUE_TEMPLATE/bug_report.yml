@@ -1,0 +1,20 @@
+name: Bug report
+description: Report a reproducible problem
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include a minimal Base and a sample note with private information removed.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Obsidian version, plugin version, OS and theme
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior

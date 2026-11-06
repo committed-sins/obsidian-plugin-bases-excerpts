@@ -1,0 +1,25 @@
+{
+  "name": "obsidian-bases-excerpts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Use heading excerpts as Bases formula values and render Markdown in a table with wrapping, automatically sized rows.",
+  "license": "MIT",
+  "author": "Michael J. Stallinger",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stallinger-dev/obsidian-bases-excerpts.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "check": "npm run build && npm test",
+    "deploy": "npm run check && node scripts/deploy.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "linkedom": "0.18.15"
+  }
+}
